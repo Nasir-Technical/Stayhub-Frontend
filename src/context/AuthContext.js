@@ -1,67 +1,81 @@
 'use client';
 
-import { createContext, useState, useEffect, useContext } from 'react';
-import api from '../lib/api';
-import { useRouter } from 'next/navigation';
+import { createContext, useContext, useState, useEffect } from 'react';
+import api from '@/services/api';
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
+  // Check if user is logged in
   useEffect(() => {
-    const loadUser = async () => {
+    const checkAuth = async () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
           const res = await api.get('/auth/me');
-          setUser(res.data.data);
+          setUser(res.data.data); // Assuming response structure { success: true, data: user }
         } catch (err) {
-          console.error('Auth Load Error', err);
+          console.error('Auth Check Failed', err);
           localStorage.removeItem('token');
-          setUser(null);
         }
       }
       setLoading(false);
     };
-
-    loadUser();
+    checkAuth();
   }, []);
 
   const login = async (email, password) => {
-    const res = await api.post('/auth/login', { email, password });
-    localStorage.setItem('token', res.data.token);
-    setUser(res.data.user || await fetchUser()); // Wait for fetchUser or use response if available (API didn't send user object in login response, so fetchMe usually needed or decode)
-    // Quick fix: fetch user immediately after login since login endpoint only returns token in some JWT implementations, 
-    // but our controller sends token only? Let's check controller. 
-    // Controller: sendTokenResponse -> json({ success: true, token }). 
-    // so we need to fetchMe.
-    const meRes = await api.get('/auth/me');
-    setUser(meRes.data.data);
-    router.push('/');
+    try {
+      const res = await api.post('/auth/login', { email, password });
+      // Spec: POST /auth/login returns { token, ... }
+      const { token } = res.data;
+      localStorage.setItem('token', token);
+      
+      // Fetch user details immediately
+      const userRes = await api.get('/auth/me');
+      setUser(userRes.data.data);
+      
+      return { success: true, user: userRes.data.data };
+    } catch (err) {
+      return { 
+        success: false, 
+        error: err.response?.data?.error || 'Login failed' 
+      };
+    }
   };
 
-  const register = async (userData) => {
-    const res = await api.post('/auth/register', userData);
-    localStorage.setItem('token', res.data.token);
-    const meRes = await api.get('/auth/me');
-    setUser(meRes.data.data);
-    router.push('/');
+  const register = async (name, email, password, role) => {
+    try {
+      const res = await api.post('/auth/register', { name, email, password, role });
+      const { token } = res.data;
+      localStorage.setItem('token', token);
+      
+      const userRes = await api.get('/auth/me');
+      setUser(userRes.data.data);
+
+      return { success: true, user: userRes.data.data };
+    } catch (err) {
+      return { 
+        success: false, 
+        error: err.response?.data?.error || 'Registration failed' 
+      };
+    }
   };
 
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
-    router.push('/login');
+    window.location.href = '/login';
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, login, register, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
 export const useAuth = () => useContext(AuthContext);
