@@ -20,10 +20,21 @@ export default function ManageHotelPage({ params }) {
   });
 
   useEffect(() => {
-     // Mock fetch rooms since endpoint might not exist
-     // In real app, fetch /hotels/:id/rooms
-     setLoading(false); 
-  }, []);
+     const fetchRooms = async () => {
+         try {
+             // Use the new getHotel endpoint which returns hotel + rooms
+             const res = await api.get(`/hotels/${id}`);
+             // data.data.rooms
+             setRooms(res.data.data.rooms || []);
+         } catch (err) {
+             console.error(err);
+         } finally {
+             setLoading(false);
+         }
+     };
+     
+     if (id) fetchRooms();
+  }, [id]);
 
   const handleAddRoom = async (e) => {
       e.preventDefault();
@@ -34,7 +45,10 @@ export default function ManageHotelPage({ params }) {
           });
           alert('Room added successfully!');
           setShowAddRoom(false);
-          // Refresh rooms logic here
+          // Manually reload or append to state
+          // For simplicity, trigger a reload or simple window.location.reload() or re-fetch
+          const res = await api.get(`/hotels/${id}`);
+          setRooms(res.data.data.rooms || []);
       } catch (err) {
           console.error(err);
           alert('Failed to add room');
@@ -83,16 +97,19 @@ export default function ManageHotelPage({ params }) {
         {/* Room List */}
         <div className="space-y-4">
              {/* Mock Room */}
-             <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200 flex justify-between items-center opacity-50">
-                 <div>
-                     <h4 className="font-bold text-lg">Deluxe Suite (Mock)</h4>
-                     <p className="text-sm text-slate-500">250 Sq ft • King Bed</p>
+             {rooms.map(room => (
+                 <div key={room._id} className="bg-white p-4 rounded-lg shadow-sm border border-slate-200 flex justify-between items-center">
+                     <div>
+                         <h4 className="font-bold text-lg">{room.name}</h4>
+                         <p className="text-sm text-slate-500">{room.description ? room.description.substring(0, 50) + '...' : ''}</p>
+                     </div>
+                     <div className="text-right">
+                         <div className="font-bold text-blue-600">${room.price}/night</div>
+                         <div className="text-xs text-slate-400">{room.totalRooms} units</div>
+                         <div className="text-xs text-green-600">{room.availableRooms} available</div>
+                     </div>
                  </div>
-                 <div className="text-right">
-                     <div className="font-bold text-blue-600">$150/night</div>
-                     <div className="text-xs text-slate-400">5 units</div>
-                 </div>
-             </div>
+             ))}
              
              {rooms.length === 0 && !loading && (
                  <div className="text-center py-10 text-slate-500">

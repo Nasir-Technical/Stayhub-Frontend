@@ -24,15 +24,8 @@ export default function HotelDetailsPage({ params }) {
     const fetchHotel = async () => {
         try {
             const res = await api.get(`/hotels/${id}`);
-            setHotel(res.data);
-            
-            // Mock Room Fetch
-            // In real app: const roomRes = await api.get(`/hotels/${id}/rooms`);
-            setRooms([
-                { _id: '101', name: 'Deluxe King Suite', price: 180, description: 'Experience ultimate comfort in our spacious Deluxe King Suite featuring a plush king-sized bed, panoramic city views, and a dedicated workspace.', availableRooms: 5 },
-                { _id: '102', name: 'Standard Double Room', price: 120, description: 'Perfect for couples or friends, this room offers two comfortable double beds, modern amenities, and a cozy atmosphere.', availableRooms: 3 },
-                { _id: '103', name: 'Executive Studio', price: 250, description: 'Ideal for business travelers, providing a separate living area, kitchenette, and access to the executive lounge.', availableRooms: 0 },
-            ]);
+            setHotel(res.data.data); // Backend now returns { ...hotel, rooms }
+            setRooms(res.data.data.rooms || []);
         } catch (err) {
             console.error(err);
             setHotel(null);

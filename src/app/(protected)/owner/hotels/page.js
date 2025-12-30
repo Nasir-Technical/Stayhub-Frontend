@@ -15,12 +15,9 @@ export default function MyHotelsPage() {
     // OR just use public for now.
     const fetchHotels = async () => {
       try {
-        const res = await api.get('/hotels'); 
-        // Assuming the user created some of these. 
-        // Since we can't easily filter by 'owner' without an endpoint, we'll show all or mock it.
-        // Let's rely on the response.
-        setHotels(Array.isArray(res.data) ? res.data : (res.data.hotels || []));
-      } catch (err) {
+      const res = await api.get('/hotels/mine');
+      setHotels(res.data.data);
+    } catch (err) {
         console.error(err);
       } finally {
         setLoading(false);

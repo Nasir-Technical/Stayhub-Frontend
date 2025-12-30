@@ -24,7 +24,8 @@ export default function CreateHotelPage() {
         router.push('/owner/hotels');
     } catch (err) {
         console.error("Failed to create hotel", err);
-        alert('Failed to create hotel');
+        const errorMsg = err.response?.data?.error || err.message || 'Failed to create hotel';
+        alert(`Error: ${errorMsg}`);
     } finally {
         setLoading(false);
     }

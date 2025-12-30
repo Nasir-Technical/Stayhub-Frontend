@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { HiWifi, HiTv, HiUser, HiCheck } from 'react-icons/hi';
+import { HiWifi, HiUser, HiDesktopComputer, HiCheck } from 'react-icons/hi';
 
 export default function RoomList({ rooms, hotelId }) {
   if (!rooms || rooms.length === 0) {
@@ -36,7 +36,7 @@ export default function RoomList({ rooms, hotelId }) {
                           <HiWifi className="mr-1" /> Free Wifi
                       </span>
                       <span className="inline-flex items-center text-xs text-slate-600 bg-slate-50 px-2 py-1 rounded">
-                          <HiTv className="mr-1" /> Flat Screen TV
+                          <HiDesktopComputer className="mr-1" /> Flat Screen TV
                       </span>
                       <span className="inline-flex items-center text-xs text-slate-600 bg-slate-50 px-2 py-1 rounded">
                           <HiUser className="mr-1" /> 2 Adults

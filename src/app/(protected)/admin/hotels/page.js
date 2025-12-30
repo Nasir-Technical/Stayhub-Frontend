@@ -15,8 +15,9 @@ export default function AdminHotelsPage() {
       // Assuming GET /hotels returns all for now or we use specific admin endpoint if available.
       // Based on previous work, simple GET /hotels was public. 
       // We might need to filter client side if public API returns everything or assumes Admin auth shows all.
-      const res = await api.get('/hotels'); 
-      const list = Array.isArray(res.data) ? res.data : (res.data.hotels || []);
+      // Use dedicated admin endpoint to see pending hotels
+      const res = await api.get('/admin/hotels'); 
+      const list = Array.isArray(res.data.data) ? res.data.data : [];
       setHotels(list);
     } catch (err) {
       console.error(err);

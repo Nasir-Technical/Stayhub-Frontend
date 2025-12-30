@@ -22,7 +22,8 @@ function HotelList() {
       try {
         const query = searchParams.toString();
         const res = await api.get(`/hotels?${query}`);
-        const list = Array.isArray(res.data) ? res.data : (res.data.hotels || []);
+        // Backend returns { success: true, data: [...] }
+        const list = Array.isArray(res.data) ? res.data : (res.data.data || []);
         setHotels(list);
       } catch (err) {
         console.error('Search failed', err);

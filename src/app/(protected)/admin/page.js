@@ -17,7 +17,13 @@ export default function AdminDashboardPage() {
     const fetchStats = async () => {
       try {
         const res = await api.get('/admin/stats');
-        setStats(res.data.data);
+        const data = res.data.data;
+        setStats({
+          totalRevenue: data.revenue || 0,
+          totalUsers: data.users || 0,
+          totalHotels: data.hotels || 0,
+          totalBookings: data.bookings || 0
+        });
       } catch (err) {
         console.error("Failed to load admin stats", err);
       } finally {
