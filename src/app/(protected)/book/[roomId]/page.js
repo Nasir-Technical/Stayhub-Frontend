@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import BookingWizard from '@/components/features/booking/BookingWizard';
 import { useAuth } from '@/context/AuthContext';
 
@@ -16,7 +17,9 @@ export default function BookingPage({ params }) {
             <p className="text-slate-600 mt-2">Complete your booking in just a few steps.</p>
         </div>
         
-        <BookingWizard roomId={roomId} userId={user._id} />
+        <Suspense fallback={<div className="text-center p-8">Loading booking wizard...</div>}>
+            <BookingWizard roomId={roomId} userId={user._id} />
+        </Suspense>
     </div>
   );
 }
