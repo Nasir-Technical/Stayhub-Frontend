@@ -57,8 +57,10 @@ export default function BookingWizard({ roomId, userId }) {
           });
           setStep(4);
       } catch (err) {
+      
           console.error("Booking failed", err);
-          alert("Booking failed. Please try again.");
+          const errorMessage = err.response?.data?.error || err.message || "Booking failed. Please try again.";
+          alert(errorMessage);
       }
   };
 

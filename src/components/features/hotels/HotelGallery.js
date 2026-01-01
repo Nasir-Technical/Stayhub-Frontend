@@ -6,9 +6,9 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-export default function HotelGallery({ hotelName }) {
-  // Mock images since backend doesn't provide array yet
-  const images = [
+export default function HotelGallery({ hotelName, images: propImages }) {
+  // Use backend images if available, otherwise mock placeholders
+  const images = propImages && propImages.length > 0 ? propImages : [
     `https://placehold.co/1200x600?text=${encodeURIComponent(hotelName)}`,
     'https://placehold.co/1200x600?text=Lobby',
     'https://placehold.co/1200x600?text=Room+View',

@@ -40,27 +40,42 @@ export default function HotelDetailsPage({ params }) {
       if (!loading && hotel) {
           const tl = gsap.timeline();
           
+          // Use fromTo to ensure opacity ends at 1 (prevents 'stuck at 0' issues)
           // Header Fade In
-          tl.from('.hotel-header', { y: 20, opacity: 0, duration: DURATION.SLOW, ease: EASING.DEFAULT });
+          tl.fromTo('.hotel-header', 
+              { y: 20, opacity: 0 },
+              { y: 0, opacity: 1, duration: DURATION.SLOW, ease: EASING.DEFAULT }
+          );
           
           // Gallery Scale Up
-          tl.from('.hotel-gallery', { scale: 0.95, opacity: 0, duration: DURATION.SLOW, ease: EASING.BOUNCE }, "-=0.3");
+          tl.fromTo('.hotel-gallery',
+              { scale: 0.95, opacity: 0 },
+              { scale: 1, opacity: 1, duration: DURATION.SLOW, ease: EASING.BOUNCE },
+              "-=0.3"
+          );
 
           // Content Reveal
-          tl.from('.hotel-content', { y: 30, opacity: 0, duration: DURATION.SLOW, ease: EASING.DEFAULT }, "-=0.4");
+          tl.fromTo('.hotel-content',
+              { y: 30, opacity: 0 },
+              { y: 0, opacity: 1, duration: DURATION.SLOW, ease: EASING.DEFAULT },
+              "-=0.4"
+          );
           
           // Rooms Stagger
-          gsap.from('.room-card', {
-              scrollTrigger: {
-                  trigger: '.rooms-section',
-                  start: 'top 80%',
-              },
-              y: 50,
-              opacity: 0,
-              duration: DURATION.SLOW,
-              stagger: 0.15,
-              ease: EASING.DEFAULT
-          });
+          gsap.fromTo('.room-card',
+              { y: 50, opacity: 0 },
+              {
+                  y: 0, 
+                  opacity: 1,
+                  duration: DURATION.SLOW,
+                  stagger: 0.15,
+                  ease: EASING.DEFAULT,
+                  scrollTrigger: {
+                      trigger: '.rooms-section',
+                      start: 'top 80%',
+                  }
+              }
+          );
       }
   }, [loading, hotel]);
 
@@ -93,7 +108,7 @@ export default function HotelDetailsPage({ params }) {
 
       {/* Gallery */}
       <div className="hotel-gallery">
-         <HotelGallery hotelName={hotel.name} />
+         <HotelGallery hotelName={hotel.name} images={hotel.images} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 hotel-content">
